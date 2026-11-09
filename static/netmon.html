@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Internet Monitor</title>
+<link rel="stylesheet" href="/static/css/fonts.css">
+<style>
+:root{--bg:#141414;--card:#1f1f1f;--line:#2e2e2e;--fg:#f2f2f2;--dim:#9a9a9a;--ok:#46d369;--warn:#f5a623;--bad:#e5484d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.4 system-ui,sans-serif;padding:20px 16px 40px;max-width:900px;margin-inline:auto}
+h1{font-family:'Bebas Neue',system-ui,sans-serif;font-weight:400;letter-spacing:2px;font-size:30px;margin:0 0 14px}
+.banner{border-radius:14px;padding:18px 20px;background:var(--card);border:1px solid var(--line);display:flex;align-items:center;gap:16px}
+.dot{width:18px;height:18px;border-radius:50%;background:var(--dim);flex:none}
+.banner.ok .dot{background:var(--ok)}.banner.cloudflare .dot{background:var(--warn)}.banner.wan .dot,.banner.lan .dot{background:var(--bad)}
+.banner b{font-size:24px;display:block}.banner span{color:var(--dim);font-size:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.tile small{color:var(--dim);display:block;font-size:12px;text-transform:uppercase;letter-spacing:.6px}
+.tile b{font-size:22px}.tile .x{color:var(--bad)}
+h2{font-size:15px;color:var(--dim);font-weight:600;margin:22px 0 8px;text-transform:uppercase;letter-spacing:.6px}
+.chart{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px}
+svg{width:100%;height:120px;display:block}
+.leg{display:flex;gap:14px;font-size:12px;color:var(--dim);margin-top:6px;flex-wrap:wrap}
+.leg i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+ul{list-style:none;margin:0;padding:0}
+li{padding:10px 14px;background:var(--card);border:1px solid var(--line);border-radius:10px;margin-bottom:6px;display:flex;justify-content:space-between;gap:10px;font-size:14px}
+li em{font-style:normal;color:var(--dim)}
+.empty{color:var(--dim);font-size:14px}
+</style>
+</head>
+<body>
+<h1>Internet Monitor</h1>
+<div id="banner" class="banner"><div class="dot"></div><div><b id="label">Loading…</b><span id="sub"></span></div></div>
+<div class="grid" id="tiles"></div>
+<h2>Last hour · latency</h2>
+<div class="chart"><svg id="chart" viewBox="0 0 600 120" preserveAspectRatio="none"></svg>
+<div class="leg"><span><i style="background:#46d369"></i>Router</span><span><i style="background:#4aa3ff"></i>1.1.1.1</span><span><i style="background:#b57bff"></i>Cloudflare HTTPS</span><span><i style="background:#e5484d"></i>Failed probe</span></div></div>
+<h2>Changes</h2>
+<ul id="events"></ul>
+<script>
+const $=id=>document.getElementById(id);
+const fmtT=t=>new Date(t*1000).toLocaleString([], {month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
+function dur(s){s=Math.max(0,s|0);const d=s/86400|0,h=s%86400/3600|0,m=s%3600/60|0;return d?d+'d '+h+'h':h?h+'h '+m+'m':m?m+'m':s+'s'}
+function tile(name,v,unit){return `<div class="tile"><small>${name}</small>${v==null?'<b class="x">down</b>':'<b>'+Math.round(v)+'<small style="display:inline;margin-left:3px">'+unit+'</small></b>'}</div>`}
+function draw(samples){
+  const W=600,H=120,series=[['#46d369',s=>s.router],['#4aa3ff',s=>s.ping['1.1.1.1']],['#b57bff',s=>s.https.cloudflare]];
+  const vals=samples.flatMap(s=>series.map(([,f])=>f(s))).filter(v=>v!=null);
+  const max=Math.max(100,Math.min(2000,...[vals.length?Math.max(...vals):100])),n=Math.max(samples.length-1,1);
+  const y=v=>H-4-(Math.min(v,max)/max)*(H-12);let out='';
+  for(const [c,f] of series){let d='',pen=false;samples.forEach((s,i)=>{const v=f(s);if(v==null){pen=false;return}d+=(pen?'L':'M')+(i/n*W).toFixed(1)+' '+y(v).toFixed(1);pen=true});out+=`<path d="${d}" fill="none" stroke="${c}" stroke-width="1.5" vector-effect="non-scaling-stroke"/>`}
+  samples.forEach((s,i)=>{if(s.status!=='ok')out+=`<rect x="${(i/n*W).toFixed(1)}" y="0" width="3" height="${H}" fill="#e5484d" opacity=".35"/>`});
+  $('chart').innerHTML=out+`<text x="4" y="12" fill="#9a9a9a" font-size="10">${Math.round(max)} ms</text>`;
+}
+async function tick(){
+  try{
+    const r=await fetch('/api/netmon',{cache:'no-store'});if(!r.ok)throw new Error(r.status);const d=await r.json();
+    $('banner').className='banner '+(d.status||'');$('label').textContent=d.label;
+    $('sub').textContent=(d.since?'For '+dur(Date.now()/1000-d.since)+' · ':'')+(d.uptime24h!=null?d.uptime24h+'% online in the last 24 h':'collecting…');
+    const n=d.now;
+    if(n)$('tiles').innerHTML=tile('Router',n.router,'ms')+tile('1.1.1.1',n.ping['1.1.1.1'],'ms')+tile('8.8.8.8',n.ping['8.8.8.8'],'ms')+tile('DNS',n.dns,'ms')+tile('Cloudflare',n.https.cloudflare,'ms')+tile('MyFlix (public)',n.https.myflix,'ms');
+    draw(d.samples);
+    const ev=d.events.slice().reverse();
+    $('events').innerHTML=ev.length?ev.map(e=>`<li><span>${d.labels[e.status]||e.status}</span><em>${fmtT(e.t)} · was ${d.labels[e.prev]||e.prev}</em></li>`).join(''):'<div class="empty">No changes recorded yet.</div>';
+  }catch(e){$('label').textContent='Monitor unreachable';$('banner').className='banner lan';$('sub').textContent='Could not reach MyFlix on the T14.'}
+}
+tick();setInterval(tick,5000);
+</script>
+</body>
+</html>

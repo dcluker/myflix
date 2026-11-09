@@ -1,0 +1,127 @@
+/* TV (Fire Stick / Silk, D-pad) and keyboard-focus polish. Loaded last.
+   html.tv already scales everything via root font-size in base.css (about 1.35x) and widens the
+   gutter to 5% (overscan-safe). Everything here uses :where() so the row / hover-card / nav
+   styles from the other stylesheets win whenever they define the same property. */
+
+html.tv {
+  cursor: none;
+  scrollbar-width: none;
+  scroll-padding-top: 5rem;
+  scroll-padding-bottom: 8rem;
+}
+html.tv::-webkit-scrollbar,
+html.tv body::-webkit-scrollbar { display: none; width: 0; height: 0; }
+
+/* Overscan-safe bottom edge: TVs crop the last few percent of the screen. */
+:where(html.tv) #view { padding-bottom: 4vh; }
+
+/* Nothing selectable or draggable with a remote. */
+html.tv body { -webkit-user-select: none; user-select: none; }
+html.tv input, html.tv textarea { -webkit-user-select: text; user-select: text; }
+
+/* Focus is always visible on TV; the ring comes from base.css (html.tv :focus). Cards, buttons
+   and nav links get a lift so the focused item reads from across the room. */
+:where(html.tv) :where(.card):focus {
+  transform: scale(1.12);
+  z-index: 5;
+}
+:where(html.tv) .nav-links a:focus,
+:where(html.tv) .nav-menu-item:focus { color: #fff; }
+
+/* Soft, springy focus everywhere: halos and lifts instead of hard white outline boxes. */
+html.tv :is(.btn-play, .btn-info, .btn-circle, .nav-logo, .nav-search-btn, .nav-profile-btn, .row-more) {
+  transition: transform .3s var(--spring), box-shadow .3s var(--ease), background-color .25s, color .25s;
+}
+html:is(.tv, .kbd) .btn-play:focus {
+  outline: none;
+  transform: scale(1.06);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, .22), 0 0 26px rgba(255, 255, 255, .35);
+}
+html:is(.tv, .kbd) .btn-info:focus {
+  outline: none;
+  transform: scale(1.06);
+  background: rgba(255, 255, 255, .3);
+  box-shadow: var(--focus-halo);
+}
+html:is(.tv, .kbd) .btn-circle:focus {
+  outline: none;
+  transform: scale(1.12);
+  background: #fff;
+  border-color: #fff;
+  color: var(--bg);
+  box-shadow: 0 0 20px rgba(255, 255, 255, .35);
+}
+html:is(.tv, .kbd) :is(.nav-logo, .nav-search-btn, .nav-profile-btn):focus {
+  outline: none;
+  border-radius: .6rem;
+  background: rgba(255, 255, 255, .1);
+  box-shadow: var(--focus-halo);
+}
+html:is(.tv, .kbd) .nav-logo:focus { transform: scale(1.04); }
+html:is(.tv, .kbd) .row-more:focus { outline: none; border-radius: 999px; background: rgba(255, 255, 255, .12); box-shadow: var(--focus-halo); }
+
+/* Row paddles are for mouse users; the D-pad scrolls rows by moving focus. */
+html.tv .row-paddle,
+html.tv .paddle { display: none !important; }
+
+/* Desktop keyboard users: the ring shows once an arrow key / Tab / Enter was used and goes away
+   on the next mouse or touch press (tv.js toggles html.kbd). */
+html.kbd :where(.card):focus { outline: 3px solid #fff; outline-offset: 2px; }
+
+/* Larger toast for couch distance. */
+html.tv .toast { font-size: 1rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  :where(html.tv) :where(.card, .btn-play, .btn-info, .btn-circle):focus { transform: none; }
+}
+
+/* TV search: while it is open the header becomes one wide, centered search bar (tabs, logo and
+   profile step aside) so the box is never squeezed or pushed past the screen edge. Back closes it. */
+html.tv #nav.search-open :is(.nav-logo, .nav-links, .nav-browse, .nav-profile) { display: none; }
+html.tv #nav.search-open .nav-right { margin-left: 0; flex: 1; justify-content: center; }
+html.tv #nav.search-open .nav-search { flex: 1; max-width: 62rem; height: 3.25rem; border-radius: .5rem; }
+html.tv #nav.search-open .nav-search-btn { width: 3.5rem; }
+html.tv #nav.search-open .nav-search.open .nav-search-input { flex: 1; width: auto; min-width: 0; padding: 0 1rem 0 0; font-size: 1.35rem; }
+html.tv #nav.search-open .nav-search-input:focus { outline: none; box-shadow: none; }
+html.tv #nav.search-open .nav-search:focus-within { border-color: #fff; box-shadow: var(--focus-halo); }
+
+/* TV header: the whole bar has to fit inside the overscan-safe width (the profile button used to be
+   pushed off the right edge), and the profile button reads as a settings control: avatar + gear. */
+html.tv .nav-logo { margin-right: 1rem; }
+html.tv .nav-links { gap: .15rem; }
+html.tv .nav-links a { padding: .4rem .5rem; font-size: .84rem; }
+html.tv .nav-right { gap: .6rem; }
+html.tv .nav-profile-btn .nav-caret { display: none; }
+html.tv .nav-profile-btn .nav-gear { display: inline-flex; color: #fff; }
+.nav-gear { display: none; }
+
+/* ---- Netflix-style TV header: profile at the left, search + tabs centered, wordmark at the right.
+   .nav-right dissolves into the bar so its children can be ordered individually. The right margin keeps
+   the wordmark clear of the Fire OS clock that floats in the top-right corner. */
+html.tv .nav-right { display: contents; }
+html.tv .nav-inner { gap: 0; }
+html.tv .nav-profile { order: 1; margin-right: auto; }
+html.tv .nav-search { order: 2; margin-right: .3rem; }
+html.tv .nav-links { order: 3; margin-left: 0; margin-right: auto; gap: .1rem; }
+html.tv .nav-links a { padding: .3rem .42rem; font-size: .78rem; }
+html.tv .nav-logo { order: 4; margin: 0 3.2rem 0 1.6rem; font-size: 1.25rem; }
+html.tv .nav-profile-btn .nav-caret { display: inline-flex; }
+html.tv .nav-profile-btn .nav-gear { display: none; }
+html.tv #nav.search-open .nav-profile,
+html.tv #nav.search-open .nav-links { display: none; }
+html.tv #nav.search-open .nav-search { order: 2; margin: 0 auto; }
+
+/* TV header has the profile button at the far LEFT, so its menu opens rightwards from it (anchored right, it ran off-screen). */
+html.tv .nav-menu { right: auto; left: 0; }
+html.tv .nav-menu-box { min-width: 15rem; font-size: .95rem; }
+html.tv .nav-menu-item { font-size: .95rem; padding: .65rem 1.1rem; }
+/* The menu sits over busy artwork: solid panel (the translucent one let the page text show through), rounded like the rest. */
+html.tv .nav-menu-box { background: var(--bg-deep); border-radius: 14px; border-color: rgba(255,255,255,.18); box-shadow: 0 18px 48px rgba(0,0,0,.85); overflow: hidden; }
+
+/* QA 2026-11-03 top bar vs Netflix: left-aligned after the avatar (was neither centred nor left), bigger 10-ft
+   tabs, pill focus everywhere (DESIGN 14.19). */
+html.tv .nav-profile { margin-right: 1.2rem; }
+html.tv .nav-links { margin-right: auto; }
+html.tv .nav-links a { padding: .35rem .7rem; font-size: .95rem; }
+html:is(.tv, .kbd) :is(.nav-search-btn, .nav-profile-btn):focus { border-radius: 999px; }
+html.tv .hero .btn-play, html.tv .hero .btn-info { border-radius: 999px; }

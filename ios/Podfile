@@ -1,0 +1,10 @@
+platform :ios, '16.0'
+install! 'cocoapods', :warn_for_unused_master_specs_repo => false
+
+# Both phone targets (with and without the embedded watch app) use VLC for formats AVPlayer cannot play.
+%w[MyFlix MyFlixWithWatch].each do |name|
+  target name do
+    use_frameworks!
+    pod 'MobileVLCKit', '~> 3.6'
+  end
+end

@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TV picture test</title>
+<style>
+html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:Arial,Helvetica,sans-serif;color:#fff;cursor:none}
+#stage{position:fixed;inset:0;overflow:hidden}
+#label{position:fixed;left:14px;bottom:14px;z-index:10;background:rgba(0,0,0,.78);color:#fff;border:2px solid #fff;padding:8px 14px;font-size:22px;line-height:1.25;border-radius:8px}
+#label small{display:block;font-size:15px;color:#bbb}
+.full{position:absolute;inset:0}
+.ramp-h{background:linear-gradient(90deg,#000,#fff)}
+.ramp-v{background:linear-gradient(180deg,#000,#fff)}
+.bars{display:flex}.bars i{flex:1}
+.grid{background-image:linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px);background-size:120px 120px;box-shadow:inset 0 0 0 3px #f00}
+.grid b{position:absolute;font:14px monospace;color:#ff0}
+.diag{position:absolute;inset:0;background:linear-gradient(to top right,transparent calc(50% - 1px),#0ff,transparent calc(50% + 1px)),linear-gradient(to bottom right,transparent calc(50% - 1px),#f0f,transparent calc(50% + 1px))}
+.chk{background:repeating-conic-gradient(#fff 0 25%,#000 0 50%) 0 0/2px 2px}
+.hl{background:repeating-linear-gradient(0deg,#fff 0 1px,#000 1px 2px)}
+.vl{background:repeating-linear-gradient(90deg,#fff 0 1px,#000 1px 2px)}
+.quad{display:grid;grid-template:1fr 1fr/1fr 1fr}
+.txt span{position:absolute;font-size:34px;font-weight:700;color:#4aa8ff}
+.mv{position:absolute;background:#fff}
+@keyframes sweepx{from{transform:translateX(-120px)}to{transform:translateX(calc(100vw + 120px))}}
+@keyframes sweepy{from{transform:translateY(-120px)}to{transform:translateY(calc(100vh + 120px))}}
+@keyframes flash{0%,49%{background:#000}50%,100%{background:#fff}}
+.small{padding:30px;font-size:15px;line-height:1.4;column-count:3;color:#ddd}
+</style></head><body>
+<div id="stage"></div><div id="label"></div>
+<script>
+const $=(h)=>{const d=document.createElement('div');d.className='full';d.innerHTML=h;return d};
+const solid=(c)=>()=>{const d=$('');d.style.background=c;return d};
+const P=[
+ ['Black',solid('#000')],['White',solid('#fff')],['Red',solid('#f00')],['Green',solid('#0f0')],['Blue',solid('#00f')],['Gray 50%',solid('#808080')],
+ ['Ramp left to right',()=>{const d=$('');d.classList.add('ramp-h');return d}],
+ ['Ramp top to bottom',()=>{const d=$('');d.classList.add('ramp-v');return d}],
+ ['Colour bars',()=>{const d=$('');d.classList.add('bars');d.innerHTML=['#fff','#ff0','#0ff','#0f0','#f0f','#f00','#00f','#000'].map(c=>`<i style="background:${c}"></i>`).join('');return d}],
+ ['Grid + corners + diagonals',()=>{const d=$('');d.classList.add('grid');let t='';for(let x=0;x<innerWidth;x+=240)for(let y=0;y<innerHeight;y+=240)t+=`<b style="left:${x+4}px;top:${y+2}px">${x},${y}</b>`;d.innerHTML=t+'<div class="diag"></div>';return d}],
+ ['"Loading..." at 9 places (the boot glitch)',()=>{const d=$('');d.classList.add('txt');const W=innerWidth,H=innerHeight;const pts=[[.03,.05],[.45,.05],[.82,.05],[.03,.5],[.45,.5],[.82,.5],[.03,.92],[.45,.92],[.82,.92]];d.innerHTML=pts.map(([x,y])=>`<span style="left:${x*W}px;top:${y*H}px">Loading...</span>`).join('');return d}],
+ ['1px checkerboard',()=>{const d=$('');d.classList.add('chk');return d}],
+ ['1px horizontal lines',()=>{const d=$('');d.classList.add('hl');return d}],
+ ['1px vertical lines',()=>{const d=$('');d.classList.add('vl');return d}],
+ ['Moving vertical bar',()=>{const d=$('');d.innerHTML='<div class="mv" style="top:0;bottom:0;width:90px;left:0;animation:sweepx 3s linear infinite"></div>';return d}],
+ ['Moving horizontal bar',()=>{const d=$('');d.innerHTML='<div class="mv" style="left:0;right:0;height:90px;top:0;animation:sweepy 3s linear infinite"></div>';return d}],
+ ['Flashing black / white (1 per second)',()=>{const d=$('');d.style.animation='flash 1s steps(1) infinite';return d}],
+ ['Quadrants (red, green, blue, white)',()=>{const d=$('');d.classList.add('quad');d.innerHTML=['#f00','#0f0','#00f','#fff'].map(c=>`<i style="background:${c}"></i>`).join('');return d}],
+ ['Small text',()=>{const d=$('');d.classList.add('small');d.innerHTML=('<p>The quick brown fox jumps over the lazy dog. 0123456789. '.repeat(3)+'</p>').repeat(24);return d}],
+];
+let i=0,auto=0,hide=0;
+const stage=document.getElementById('stage'),lab=document.getElementById('label');
+function show(n){i=(n+P.length)%P.length;stage.replaceChildren(P[i][1]());
+ lab.innerHTML=`${i+1} / ${P.length}  ${P[i][0]}<small>${innerWidth}×${innerHeight} css px, ratio ${devicePixelRatio} · Right/OK next · Left back · Up hide label · Down auto-play</small>`;lab.style.display=hide?'none':'block'}
+addEventListener('keydown',e=>{const k=e.key;
+ if(k==='ArrowRight'||k==='Enter'||k===' '||e.keyCode===13||e.keyCode===23){e.preventDefault();show(i+1)}
+ else if(k==='ArrowLeft'){e.preventDefault();show(i-1)}
+ else if(k==='ArrowUp'){e.preventDefault();hide=!hide;lab.style.display=hide?'none':'block'}
+ else if(k==='ArrowDown'){e.preventDefault();auto=auto?(clearInterval(auto),0):setInterval(()=>show(i+1),2500)}});
+addEventListener('resize',()=>show(i));
+show(0);
+</script></body></html>

@@ -1,0 +1,13 @@
+.git
+.env
+*.local.env
+deploy.local.env
+SPEC.local.md
+data/
+android/
+ios/
+scripts/
+tests/
+__pycache__/
+*.bak*
+*.md

@@ -1,0 +1,9 @@
+# Copy to local.properties (gitignored) and fill in. Nothing here is a credential.
+sdk.dir=/path/to/android-sdk
+MYFLIX_TV_BASE=https://tv.example.com
+MYFLIX_HOST_SUFFIX=.example.com
+MYFLIX_LAN_JELLYFIN=http://192.168.1.10:8096
+MYFLIX_PUBLIC_MYFLIX_BASE=https://myflix.example.com
+MYFLIX_PUBLIC_JELLYFIN_BASE=https://jellyfin.example.com
+# Name of the macOS Keychain item holding the release-keystore password (build_apk.sh)
+MYFLIX_KS_KEYCHAIN_SERVICE=myflix-apk-keystore

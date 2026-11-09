@@ -1,0 +1,6 @@
+// Copy to Local.xcconfig (git-ignored) and fill in. Host names only, no https://.
+MYFLIX_TV_HOST = tv.example.com
+MYFLIX_HOST_SUFFIX = .example.com
+MYFLIX_PUBLIC_HOST = myflix.example.com
+MYFLIX_PUBLIC_JELLYFIN_HOST = jellyfin.example.com
+DEVELOPMENT_TEAM = YOURTEAMID

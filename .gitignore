@@ -1,0 +1,22 @@
+data/
+__pycache__/
+.DS_Store
+# site-specific / private
+deploy.local.env
+SPEC.local.md
+.env
+*.local.env
+
+# iOS
+ios/Config/Local.xcconfig
+ios/MyFlix.xcodeproj/
+ios/build/
+ios/MyFlix/Info.plist
+
+# local backups / generated
+*.bak*
+ios/Pods/
+ios/MyFlix.xcworkspace/
+scripts/*.local.env
+ios/MyFlixWatch/Info.plist
+.claude/

@@ -1,0 +1,323 @@
+/* Rows + cards. Cards-per-view is driven by --cpv on .row (6/5/4/3/2 with a partial peek). */
+
+.row {
+  position: relative;
+  --cpv: 6;
+  --gap: 2px;
+  --track-pad: .6rem;
+  margin: 0 0 var(--row-gap);
+}
+@media (max-width: 1399px) { .row { --cpv: 5; } }
+@media (max-width: 1099px) { .row { --cpv: 4; } }
+@media (max-width: 799px)  { .row { --cpv: 3; } }
+@media (max-width: 499px)  { .row { --cpv: 2; } }
+
+/* portrait shapes */
+.row[data-shape="poster"] { --cpv: 8; }
+@media (max-width: 1399px) { .row[data-shape="poster"] { --cpv: 6; } }
+@media (max-width: 1099px) { .row[data-shape="poster"] { --cpv: 5; } }
+@media (max-width: 799px)  { .row[data-shape="poster"] { --cpv: 4; } }
+@media (max-width: 499px)  { .row[data-shape="poster"] { --cpv: 3; } }
+
+/* top 10 (numeral + poster) cards are wider than a plain poster */
+.row[data-shape="top10"] { --cpv: 5; }
+@media (max-width: 1399px) { .row[data-shape="top10"] { --cpv: 4; } }
+@media (max-width: 1099px) { .row[data-shape="top10"] { --cpv: 3; } }
+@media (max-width: 799px)  { .row[data-shape="top10"] { --cpv: 2.5; } }
+
+/* phones: fractional counts so the next card always peeks */
+@media (max-width: 739px) {
+  .row { --cpv: 2.3; --gap: 6px; --track-pad: .4rem; margin-bottom: 1.6rem; }
+  .row[data-shape="poster"] { --cpv: 3.3; }
+  .row[data-shape="top10"] { --cpv: 2.4; }
+}
+
+/* Fire TV: four per view */
+html.tv .row,
+html.tv .row[data-shape="poster"] { --cpv: 4; }
+html.tv .row[data-shape="top10"] { --cpv: 3; }
+
+.row.is-empty { display: none; }
+
+/* ---- header: title, "Explore All", page indicators ---------------------------------- */
+.row-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0 var(--gutter);
+  min-height: 1.5em;
+}
+.row-title {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  margin: 0;
+  font-size: max(1rem, 1.4vw);
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--text-2);
+}
+.row-title-text { transition: color .3s; }
+.row-more {
+  display: inline-flex;
+  align-items: center;
+  gap: .15em;
+  font-size: .72em;
+  font-weight: 700;
+  color: #54b9c5;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateX(-.6em);
+  transition: opacity .3s var(--ease), transform .3s var(--ease);
+}
+.row-more-chev { display: inline-flex; }
+.row:hover .row-more,
+.row-more:focus-visible { opacity: 1; transform: none; }
+.row-action {
+  font-size: .62em;
+  font-weight: 700;
+  color: var(--text-2);
+  padding: .3em .8em;
+  border: 1px solid rgba(255, 255, 255, .35);
+  border-radius: 2em;
+  background: rgba(255, 255, 255, .06);
+  transition: background-color .2s, border-color .2s, transform .2s var(--ease);
+}
+.row-action:hover { background: rgba(255, 255, 255, .16); border-color: #fff; }
+.row-action:active { transform: scale(.95); }
+
+.row-pager {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding-bottom: .35em;
+  opacity: 0;
+  transition: opacity .3s;
+}
+.row-pager:empty { display: none; }
+.row-pager li { width: 12px; height: 2px; background: #4d4d4d; }
+.row-pager li.on { background: #aaa; }
+.row:hover .row-pager { opacity: 1; }
+
+/* ---- slider + track ----------------------------------------------------------------- */
+.row-slider { position: relative; }
+.row-track {
+  position: relative;
+  display: flex;
+  gap: var(--gap);
+  padding: var(--track-pad) var(--gutter);
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scroll-padding: 0 var(--gutter);
+}
+
+.paddle {
+  position: absolute;
+  top: var(--track-pad);
+  bottom: var(--track-pad);
+  z-index: 4;
+  width: var(--gutter);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  background: rgba(var(--bg-rgb), .5);
+  opacity: 0;
+  transition: opacity .25s, background-color .25s;
+}
+.paddle-prev { left: 0; border-radius: 0 var(--radius) var(--radius) 0; }
+.paddle-next { right: 0; border-radius: var(--radius) 0 0 var(--radius); }
+.paddle svg { width: max(24px, 2.2vw); height: max(24px, 2.2vw); transition: transform .1s ease-out; }
+.row-slider:hover .paddle:not(.is-off) { opacity: 1; }
+.paddle:hover { background: rgba(var(--bg-rgb), .72); }
+.paddle:hover svg { transform: scale(1.3); }
+.paddle.is-off { visibility: hidden; opacity: 0; pointer-events: none; }
+
+html.touch .paddle, html.touch .row-pager,
+html.tv .paddle, html.tv .row-pager { display: none; }
+@media (max-width: 739px) {
+  .paddle, .row-pager { display: none; }
+  .row-more { opacity: 1; transform: none; }
+  .row-title { font-size: 1.05rem; }
+  .row-head { min-height: 0; }
+}
+html.touch .row-more { opacity: 1; transform: none; }
+
+/* native snap scrolling on touch / phones */
+@media (max-width: 739px) {
+  .row-track { scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch; }
+  .card { scroll-snap-align: start; }
+}
+html.touch .row-track { scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch; }
+html.touch .card { scroll-snap-align: start; }
+
+/* ---- cards -------------------------------------------------------------------------- */
+.card {
+  position: relative;
+  flex: 0 0 calc((100% - (var(--cpv) - 1) * var(--gap)) / var(--cpv));
+  min-width: 0;
+  border-radius: var(--radius);
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+.card-img {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: #222;
+}
+.card--poster .card-img { aspect-ratio: 2 / 3; }
+.card-img > .img, .card-img > .img-ph { position: absolute; inset: 0; }
+.card-img.has-grad::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(var(--bg-deep-rgb), .72) 0, rgba(var(--bg-deep-rgb), .25) 38%, rgba(var(--bg-deep-rgb), 0) 62%);
+  pointer-events: none;
+}
+.card-logo {
+  position: absolute;
+  left: 6%;
+  bottom: 9%;
+  z-index: 1;
+  width: auto;
+  height: auto;
+  max-width: 54%;
+  max-height: 36%;
+  object-fit: contain;
+  object-position: left bottom;
+  filter: drop-shadow(0 1px 4px rgba(0, 0, 0, .7));
+  pointer-events: none;
+}
+.card-cap {
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  bottom: 8%;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: .1em;
+  font-size: clamp(.7rem, .95vw, 1rem);
+  font-weight: 700;
+  line-height: 1.15;
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, .8);
+  pointer-events: none;
+}
+.cap-ep { font-size: .85em; font-weight: 700; color: var(--text-2); }
+.cap-name { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+.card-play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  margin: -1.3rem 0 0 -1.3rem;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, .85);
+  background: rgba(0, 0, 0, .45);
+  color: #fff;
+  pointer-events: none;
+}
+.card-play svg { width: 1.2rem; height: 1.2rem; margin-left: 2px; }
+
+.card-progress {
+  height: 3px;
+  margin-top: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, .28);
+  overflow: hidden;
+}
+.card-progress > span { display: block; height: 100%; background: var(--red); border-radius: 2px; }
+
+/* ---- Top 10: outlined numeral behind a poster ----------------------------------------- */
+.card--top10 { aspect-ratio: 14 / 13; }
+.card--top10 .t10-num {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 50%;
+  height: 100%;
+  pointer-events: none;
+}
+.card--top10 .t10-num svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.card--top10 .card-img {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 62%;
+  height: 100%;
+  aspect-ratio: auto;
+}
+.card--top10 .card-progress { position: absolute; left: 38%; right: 0; bottom: 0; margin: 0; }
+
+/* ---- TV: focused card scales up, info panel renders under the row ------------------------- */
+/* Focus = a springy lift with a soft glow on the artwork itself (no hard outline box). */
+html.tv .card { transition: transform .32s var(--spring); }
+html.tv .card .card-img { transition: box-shadow .32s var(--ease), filter .32s var(--ease), border-radius .32s var(--ease); }
+html.tv .card:focus { z-index: 3; transform: scale(1.12); outline: none; }
+html.tv .card:focus .card-img,
+html.kbd .card:focus .card-img {
+  border-radius: .55rem;
+  filter: brightness(1.08) saturate(1.06);
+  box-shadow: var(--focus-glow);
+}
+html.kbd .card:focus { outline: none; }
+
+/* ---- TV feature row ("Your Next Watch"): one big landscape card, then posters of the same height.
+   2.667 poster-widths = a 16:9 card as tall as a 2:3 poster. */
+html.tv .row.row--feature, html.tv .row.row--feature[data-shape="poster"] { --cpv: 6.4; }
+html.tv .row--feature .card--feature { flex: 0 0 calc(2.667 * (100% - (var(--cpv) - 1) * var(--gap)) / var(--cpv)); }
+.card-note {
+  position: absolute; right: .7rem; bottom: .7rem; z-index: 2; max-width: 70%;
+  padding: .3rem .7rem; border-radius: 999px; background: rgba(0, 0, 0, .62);
+  font-size: .8rem; font-weight: 700; color: #fff; text-shadow: none;
+}
+
+/* Continue Watching shows posters now: a notch smaller than the other poster rows so the tiles are not huge. */
+.row--continue[data-shape="poster"] { --cpv: 9; }
+@media (max-width: 1399px) { .row--continue[data-shape="poster"] { --cpv: 7.5; } }
+@media (max-width: 1099px) { .row--continue[data-shape="poster"] { --cpv: 6.5; } }
+@media (max-width: 799px)  { .row--continue[data-shape="poster"] { --cpv: 5.5; } }
+@media (max-width: 499px)  { .row--continue[data-shape="poster"] { --cpv: 4.2; } }
+html.tv .row--continue[data-shape="poster"] { --cpv: 5.5; }
+
+/* TV: a focused poster scales to 1.12, which outgrows the track's .6rem padding and got its top sliced off by
+   overflow-y (most visible on Continue Watching). Give portrait rows room for the lift and pull the margins back
+   so the row spacing does not change. */
+html.tv .row[data-shape="poster"] .row-track,
+html.tv .row[data-shape="top10"] .row-track { padding-block: 2rem; margin-block: -1.4rem; }
+
+/* QA 2026-11-03: no text over artwork except the title. */
+.card-img.has-grad > .img-ph span { display: none; }   /* no-art landscape card: the caption already names it (was doubled) */
+.card-cap--below { position: static; padding: .45rem .1rem 0; text-shadow: none; font-size: clamp(.7rem, .9vw, .95rem); }
+.card-cap--below .cap-name { font-weight: 600; color: var(--text-2); }
+.row-sub { margin-left: .8rem; font-size: .75em; font-weight: 500; color: var(--muted); }
+
+/* ---- iPad (mini) in the native iOS app: fewer, bigger posters and larger titles ------------------ */
+@media (min-width: 740px) {
+  html.app-ios .row { --cpv: 3.6; }
+  html.app-ios .row[data-shape="poster"] { --cpv: 4.4; }
+  html.app-ios .row[data-shape="top10"] { --cpv: 3; }
+  html.app-ios .row--continue[data-shape="poster"] { --cpv: 4.8; }
+  html.app-ios .row-title { font-size: 1.4rem; }
+  html.app-ios .card-cap { font-size: 1rem; }
+  html.app-ios .card-cap--below { font-size: 1rem; }
+}
+@media (min-width: 1000px) {
+  html.app-ios .row { --cpv: 4.4; }
+  html.app-ios .row[data-shape="poster"] { --cpv: 5.6; }
+  html.app-ios .row[data-shape="top10"] { --cpv: 4; }
+  html.app-ios .row--continue[data-shape="poster"] { --cpv: 6.4; }
+}

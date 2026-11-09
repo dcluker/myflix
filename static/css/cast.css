@@ -1,0 +1,44 @@
+/* Cast to TV (phones/browsers): detail-modal button, episode buttons, cast-to menu, and the remote on the "playing on a TV" bar. */
+.btn-circle[hidden], .dm-ep-cast[hidden] { display: none !important; }
+.dm-ep-cast { flex: 0 0 auto; width: 34px; height: 34px; margin-left: .6rem; padding: 0; border: 0; border-radius: 50%; background: rgba(255, 255, 255, .12); color: #fff;
+  display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+.dm-ep-cast:hover, .dm-ep-cast:focus-visible { background: rgba(255, 255, 255, .25); outline: none; }
+.dm-ep-cast:active { transform: scale(.94); }
+.dm-ep-head { align-items: center; }
+
+.cast-menu { position: fixed; z-index: 99999; min-width: 11rem; padding: .35rem 0; background: var(--bg-elev); border: 1px solid #3a3a3a; border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .7); animation: cast-in .14s var(--ease) both; }
+@keyframes cast-in { from { opacity: 0; transform: translateY(-4px); } }
+.cast-menu-h { padding: .35rem 1rem .25rem; font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--dim, #777); }
+.cast-menu-i { display: block; width: 100%; text-align: left; padding: .7rem 1rem; background: none; border: 0; color: #e5e5e5; font: inherit; font-size: .95rem; cursor: pointer; }
+.cast-menu-i:hover, .cast-menu-i:focus-visible { background: rgba(255, 255, 255, .1); outline: none; }
+.cast-menu-i.is-last { font-weight: 700; color: #fff; }
+
+.handoff-rc { display: flex; gap: .4rem; flex: 0 0 auto; }
+.handoff-rcb { width: 2.4rem; height: 2.4rem; padding: 0; border: 0; border-radius: 50%; background: rgba(255, 255, 255, .12); color: #fff;
+  display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+.handoff-rcb:hover, .handoff-rcb:focus-visible { background: rgba(255, 255, 255, .25); outline: none; }
+.handoff-rcb:active { transform: scale(.94); }
+.handoff-rcb[disabled] { opacity: .5; cursor: default; }
+.handoff-stop { background: var(--red, #e50914); }
+.handoff-stop:hover, .handoff-stop:focus-visible { background: var(--red-hover, #f40612); }
+@media (max-width: 440px) { .handoff-rcb { width: 2.2rem; height: 2.2rem; } .handoff-rc { gap: .3rem; } }
+
+/* hand-off bar: title row on top, transport controls on their own row underneath */
+.handoff { flex-wrap: wrap; border-radius: 28px; row-gap: .5rem; }
+.handoff .handoff-rc { order: 5; flex: 1 0 100%; justify-content: center; gap: .9rem; padding: .1rem 0 .15rem; }
+.handoff .handoff-rcb { width: 2.9rem; height: 2.9rem; }
+.handoff .handoff-pp { width: 3.4rem; height: 3.4rem; background: #fff; color: var(--bg-deep); }
+.handoff .handoff-pp:hover, .handoff .handoff-pp:focus-visible { background: #e6e6e6; }
+.handoff .handoff-stop { background: var(--red); }
+.hw-btn[hidden] { display: none !important; }
+.dm-ep-cast.hw-btn { font-size: 16px; line-height: 34px; text-align: center; }
+.hw-btn[data-k="season-menu"] { font-size: 20px; font-weight: 700; letter-spacing: 1px; line-height: 1; }
+
+.cast-ask { position: fixed; inset: 0; z-index: 100000; display: flex; align-items: center; justify-content: center; background: rgba(0, 0, 0, .6); }
+.cast-ask-card { width: min(90vw, 24rem); padding: 1.2rem 1.3rem; background: var(--bg-elev, #1f1f1f); border: 1px solid #3a3a3a; border-radius: 10px; color: #fff; }
+.cast-ask-card p { margin: 0 0 1rem; font-size: 1.05rem; line-height: 1.35; }
+.cast-ask-row { display: flex; gap: .6rem; justify-content: flex-end; }
+.cast-ask-row button { padding: .65rem 1.1rem; border-radius: 6px; border: 0; font: inherit; font-weight: 700; cursor: pointer; }
+.cast-ask-no { background: #3a3a3a; color: #fff; }
+.cast-ask-yes { background: #fff; color: #000; }

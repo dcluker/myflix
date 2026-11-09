@@ -1,0 +1,103 @@
+name: MyFlix
+options:
+  bundleIdPrefix: com.devinluker
+  deploymentTarget:
+    iOS: "16.0"
+configFiles:
+  Debug: Config/Local.xcconfig
+  Release: Config/Local.xcconfig
+targetTemplates:
+  PhoneApp:
+    type: application
+    platform: iOS
+    sources: [MyFlix, Shared]
+    settings:
+      base:
+        MF_APP_ID: com.devinluker.myflix         # override on the command line to install under another id (the watch app follows)
+        PRODUCT_BUNDLE_IDENTIFIER: $(MF_APP_ID)
+        CODE_SIGN_STYLE: Automatic
+        SWIFT_VERSION: "5.0"
+        TARGETED_DEVICE_FAMILY: "1,2"
+        MARKETING_VERSION: "1.1.0"
+        CURRENT_PROJECT_VERSION: "2"
+        GENERATE_INFOPLIST_FILE: NO
+    info:
+      path: MyFlix/Info.plist
+      properties:
+        CFBundleDisplayName: MyFlix
+        NSMicrophoneUsageDescription: MyFlix uses the microphone for voice search.
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        UILaunchScreen:
+          UIColorName: ""
+        UIRequiresFullScreen: false
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UIBackgroundModes: [audio]
+        ITSAppUsesNonExemptEncryption: false
+        MFTvHost: $(MYFLIX_TV_HOST)
+        MFHostSuffix: $(MYFLIX_HOST_SUFFIX)
+        MFPublicMyflixHost: $(MYFLIX_PUBLIC_HOST)
+        MFPublicJellyfinHost: $(MYFLIX_PUBLIC_JELLYFIN_HOST)
+
+targets:
+  # The app for iPad (and iPhone) without the watch app. Used for installs and the weekly re-sign: a watch app can only be signed
+  # once a watch is registered with the Apple account, so it must not be a hard dependency of the everyday build.
+  MyFlix:
+    templates: [PhoneApp]
+
+  # Same app with the watch app embedded. Build this one for an iPhone that has an Apple Watch paired.
+  MyFlixWithWatch:
+    templates: [PhoneApp]
+    dependencies:
+      - target: MyFlixWatch
+    settings:
+      base:
+        PRODUCT_NAME: MyFlix
+
+  MyFlixWatch:
+    type: application
+    platform: watchOS
+    deploymentTarget: "10.0"
+    sources: [MyFlixWatch, Shared]
+    settings:
+      base:
+        MF_APP_ID: com.devinluker.myflix
+        PRODUCT_BUNDLE_IDENTIFIER: $(MF_APP_ID).watchkitapp
+        CODE_SIGN_STYLE: Automatic
+        SWIFT_VERSION: "5.0"
+        MARKETING_VERSION: "1.1.0"
+        CURRENT_PROJECT_VERSION: "2"
+        GENERATE_INFOPLIST_FILE: NO
+    info:
+      path: MyFlixWatch/Info.plist
+      properties:
+        CFBundleDisplayName: MyFlix
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        WKApplication: true
+        WKCompanionAppBundleIdentifier: $(MF_APP_ID)
+        ITSAppUsesNonExemptEncryption: false
+        MFHostSuffix: $(MYFLIX_HOST_SUFFIX)
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true      # lets the simulator reach a mock server; real traffic is https
+
+  MyFlixWatchTests:
+    type: bundle.unit-test
+    platform: watchOS
+    deploymentTarget: "10.0"
+    sources: [MyFlixWatchTests]
+    dependencies:
+      - target: MyFlixWatch
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        MF_APP_ID: com.devinluker.myflix
+        PRODUCT_BUNDLE_IDENTIFIER: $(MF_APP_ID).watchtests

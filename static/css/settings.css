@@ -1,0 +1,75 @@
+/* Settings page */
+.st { max-width: 46rem; margin: 0 auto; padding: calc(var(--nav-h) + 1.5rem) var(--gutter) 4rem; }
+.st-h1 { font-family: 'Bebas Neue', sans-serif; font-size: 2.4rem; letter-spacing: .04em; margin: 0 0 1rem; }
+.st-card { background: var(--bg-elev); border: 1px solid rgba(255,255,255,.1); border-radius: 12px; padding: 1.1rem 1.25rem 1.2rem; margin-bottom: 1.25rem; }
+.st-card h2 { margin: 0 0 .4rem; font-size: 1.15rem; }
+.st-help { color: var(--muted); font-size: .9rem; margin: 0 0 .9rem; line-height: 1.4; }
+.st-swatches { display: flex; flex-wrap: wrap; gap: .6rem; margin-bottom: .9rem; }
+.st-sw { display: flex; align-items: center; gap: .45rem; padding: .35rem .8rem .35rem .45rem; border-radius: 999px; border: 1px solid rgba(255,255,255,.18);
+  background: var(--bg); color: #e5e5e5; font: inherit; font-size: .85rem; cursor: pointer; outline: none; }
+.st-dot { width: 1.15rem; height: 1.15rem; border-radius: 50%; display: inline-block; box-shadow: inset 0 0 0 1px rgba(255,255,255,.25); }
+.st-sw[aria-pressed="true"] { border-color: #fff; box-shadow: 0 0 0 1px #fff; }
+.st-sw:hover, .st-sw:focus-visible { background: #fff; color: #111; }
+.st-row { display: flex; flex-wrap: wrap; align-items: center; gap: .7rem; margin: .7rem 0 0; }
+.st-lab { display: flex; align-items: center; gap: .6rem; font-size: .9rem; color: #ddd; }
+.st-color { width: 3.2rem; height: 2rem; padding: 0; border: 1px solid rgba(255,255,255,.25); border-radius: 6px; background: none; cursor: pointer; }
+.st-check { display: flex; align-items: center; gap: .55rem; margin-top: .8rem; font-size: .9rem; color: #ddd; }
+.st-btn { font: inherit; font-size: .9rem; padding: .55rem 1.1rem; border-radius: 999px; border: 1px solid rgba(255,255,255,.3); background: var(--bg); color: #fff; cursor: pointer; outline: none; }
+.st-btn:hover, .st-btn:focus-visible { background: #fff; color: #111; }
+.st-primary { background: var(--red); border-color: var(--red); }
+.st-primary:hover, .st-primary:focus-visible { background: var(--red-hover); color: #fff; box-shadow: 0 0 0 2px #fff; }
+.st-input { display: block; width: 100%; box-sizing: border-box; margin: 0 0 .6rem; padding: .65rem .8rem; border-radius: 8px; border: 1px solid #444; background: var(--bg-raised); color: #fff; font: inherit; }
+.st-input:focus { outline: 2px solid #fff; }
+.st-msg { min-height: 1.3rem; margin: .7rem 0 0; font-size: .85rem; color: #cfcfcf; }
+.st-sub { margin: 1rem 0 .15rem; font-size: 1rem; font-weight: 600; }
+.st-pick:first-of-type .st-sub { margin-top: .2rem; }
+
+/* Profile card */
+.st-profile-top { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: .4rem; }
+.st-av .avatar { border-radius: 14px; }
+.st-profile-name { flex: 1; min-width: 12rem; display: flex; gap: .6rem; align-items: center; }
+.st-profile-name .st-input { margin: 0; flex: 1; }
+.st-emojis { display: flex; flex-wrap: wrap; gap: .45rem; margin: .4rem 0 .6rem; }
+.st-emoji { font-size: 1.5rem; line-height: 1; width: 2.9rem; height: 2.9rem; border-radius: 12px; border: 1px solid rgba(255,255,255,.18); background: var(--bg); cursor: pointer; outline: none; }
+.st-emoji[aria-pressed="true"] { border-color: #fff; box-shadow: 0 0 0 1px #fff; }
+.st-emoji:hover, .st-emoji:focus-visible { background: #fff; }
+.st-cols { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: .4rem; }
+.st-col { width: 2rem; height: 2rem; border-radius: 50%; border: 2px solid rgba(255,255,255,.25); cursor: pointer; outline: none; }
+.st-col[aria-pressed="true"] { border-color: #fff; box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px #fff; }
+.st-col:hover, .st-col:focus-visible { border-color: #fff; transform: scale(1.12); }
+.st-scope { margin: .7rem 0 .2rem; }
+
+/* Custom colour picker: big preview + sliders (TV friendly) */
+.cp { margin: .5rem 0 .2rem; }
+.cp-toggle { display: flex; align-items: center; gap: .7rem; padding: .45rem .9rem .45rem .45rem; border-radius: 14px; border: 1px solid rgba(255,255,255,.2);
+  background: var(--bg); color: #fff; font: inherit; font-size: .9rem; cursor: pointer; outline: none; width: 100%; max-width: 26rem; }
+.cp-toggle:hover, .cp-toggle:focus-visible { background: #fff; color: #111; }
+.cp-swatch { width: 3.2rem; height: 2.2rem; border-radius: 10px; box-shadow: inset 0 0 0 1px rgba(255,255,255,.35); flex: 0 0 auto; }
+.cp-hex { font-variant-numeric: tabular-nums; font-weight: 600; min-width: 5.5rem; }
+.cp-name { flex: 1; color: var(--muted); text-align: right; }
+.cp-toggle:hover .cp-name, .cp-toggle:focus-visible .cp-name { color: #444; }
+.cp-body { margin-top: .6rem; max-width: 26rem; }
+.cp-body[hidden] { display: none; }
+.cp-row { display: flex; align-items: center; gap: .8rem; margin: .5rem 0; }
+.cp-lab { flex: 0 0 6.5rem; font-size: .82rem; color: #ccc; }
+.cp-range { -webkit-appearance: none; appearance: none; flex: 1; height: 1.5rem; border-radius: 999px; outline: none; margin: 0; background: transparent; }
+.cp-range::-webkit-slider-runnable-track { height: 1.1rem; border-radius: 999px; box-shadow: inset 0 0 0 1px rgba(255,255,255,.25); }
+.cp-hue::-webkit-slider-runnable-track { background: linear-gradient(90deg, hsl(0 90% 50%), hsl(60 90% 50%), hsl(120 90% 45%), hsl(180 90% 45%), hsl(240 90% 60%), hsl(300 90% 55%), hsl(360 90% 50%)); }
+.cp-sat::-webkit-slider-runnable-track { background: linear-gradient(90deg, hsl(var(--cp-h) 0% var(--cp-l)), hsl(var(--cp-h) 100% var(--cp-l))); }
+.cp-light::-webkit-slider-runnable-track { background: linear-gradient(90deg, #000, hsl(var(--cp-h) var(--cp-s) 50%), #fff); }
+.cp-range::-webkit-slider-thumb { -webkit-appearance: none; width: 1.7rem; height: 1.7rem; margin-top: -.3rem; border-radius: 50%; background: #fff; border: 3px solid #111; box-shadow: 0 0 0 2px #fff; }
+.cp-range:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 3px #fff, 0 0 0 6px var(--red); }
+.cp-hexin { max-width: 9rem; margin-top: .4rem; }
+
+/* Cards take focus so the TV remote can scroll to the last one even when it holds no buttons (Sign-in under Cloudflare). */
+.st-card:focus { outline: none; }
+.st-card:focus-visible { border-color: rgba(255,255,255,.55); box-shadow: 0 0 0 2px rgba(255,255,255,.35); }
+.st { padding-bottom: 6rem; }
+
+/* Emoji categories */
+.st-tabs { display: flex; flex-wrap: wrap; gap: .4rem; margin: .4rem 0 .5rem; }
+.st-tab { font: inherit; font-size: .82rem; padding: .3rem .8rem; border-radius: 999px; border: 1px solid rgba(255,255,255,.18); background: var(--bg); color: #ddd; cursor: pointer; outline: none; }
+.st-tab[aria-pressed="true"] { background: var(--bg-card); color: #fff; border-color: #fff; }
+.st-tab:hover, .st-tab:focus-visible { background: #fff; color: #111; }
+.st-anyrow { margin: .2rem 0 .4rem; }
+.st-any { margin: 0; max-width: 13rem; }

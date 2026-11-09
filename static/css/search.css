@@ -1,0 +1,105 @@
+/* Search view. The result grid and cards reuse .bgrid / .bcard from browse.css. */
+
+.sx {
+  min-height: 100vh;
+  padding: calc(var(--nav-h) + 1.25rem) var(--gutter) 4rem;
+}
+.sx-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.sx-explore {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .5rem .6rem;
+  margin-bottom: 1.5rem;
+}
+.sx-explore-label { color: var(--muted); font-size: .9rem; margin-right: .25rem; }
+.sx-chip {
+  display: inline-block;
+  padding: .3em .9em;
+  border: 1px solid rgba(255, 255, 255, .28);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .07);
+  color: var(--text-2);
+  font-size: .8125rem;
+  line-height: 1.5;
+  transition: background-color .2s, border-color .2s;
+}
+.sx-chip:hover, .sx-chip:focus-visible { background: rgba(255, 255, 255, .18); border-color: rgba(255, 255, 255, .55); color: #fff; }
+
+.sx-empty {
+  max-width: 40rem;
+  margin: 10vh auto 0;
+  text-align: center;
+  color: var(--muted);
+}
+.sx-empty h1 {
+  margin-bottom: 1.25rem;
+  font-size: clamp(1.1rem, 1.7vw, 1.7rem);
+  font-weight: 400;
+  line-height: 1.35;
+  color: var(--text-2);
+  overflow-wrap: anywhere;
+}
+.sx-empty h1 strong { font-weight: 700; color: #fff; }
+.sx-sug-t { margin-bottom: .5rem; }
+.sx-sug {
+  display: inline-block;
+  margin-bottom: 1.75rem;
+  padding-left: 1.2rem;
+  text-align: left;
+  list-style: disc;
+  line-height: 1.8;
+}
+.sx-empty .sx-explore { justify-content: center; margin-bottom: 1.25rem; }
+.sx-all { margin-top: .5rem; }
+
+/* ---- "Not in MyFlix yet": titles Jellyseerr can fetch (portrait posters, request on press) ---- */
+.sx-empty--top { margin-bottom: 1.5rem; }
+.sx-empty--top h1 { margin-bottom: 0; }
+.sx-empty--rest { margin-top: 2.5rem; }
+.sx-req { margin-top: 3rem; }
+.sx-empty--top + .sx-req { margin-top: 0; }
+.sx-req-title { font-size: clamp(1.1rem, 1.7vw, 1.5rem); font-weight: 700; line-height: 1.2; color: var(--text-2); }
+.sx-req-note { margin: .35rem 0 1rem; color: var(--muted); font-size: .9rem; }
+
+.bgrid.rq-grid { --cols: 7; }
+@media (max-width: 1399px) { .bgrid.rq-grid { --cols: 6; } }
+@media (max-width: 1099px) { .bgrid.rq-grid { --cols: 5; } }
+@media (max-width: 799px) { .bgrid.rq-grid { --cols: 4; } }
+@media (max-width: 499px) { .bgrid.rq-grid { --cols: 3; } }
+html.tv .bgrid.rq-grid { --cols: 6; }
+
+.rq-img { aspect-ratio: 2 / 3; }
+.rq-card:focus-visible .rq-img { outline: 2px solid rgba(255, 255, 255, .8); outline-offset: 2px; }
+.rq-badge {
+  position: absolute;
+  top: .4rem;
+  left: .4rem;
+  z-index: 1;
+  max-width: calc(100% - .8rem);
+  padding: .15em .55em;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, .78);
+  border: 1px solid rgba(255, 255, 255, .35);
+  color: #fff;
+  font-size: .68rem;
+  font-weight: 700;
+  line-height: 1.5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+}
+.rq-badge[data-status="downloading"], .rq-badge[data-status="available"] { border-color: var(--green); color: var(--green); }
+.rq-badge[data-status="noRelease"] { border-color: #e0a030; color: #e0a030; }

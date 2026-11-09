@@ -1,0 +1,14 @@
+# docker compose up -d --build        (run ./setup.sh first: it writes the .env this file reads)
+services:
+  myflix:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      MYFLIX_AUTH: ${MYFLIX_AUTH:-password}
+    ports:
+      - "${MYFLIX_BIND:-0.0.0.0}:${MYFLIX_PORT:-8108}:8108"
+    volumes:
+      - myflix-data:/app/data      # profiles, image cache, session key: survives rebuilds
+volumes:
+  myflix-data:

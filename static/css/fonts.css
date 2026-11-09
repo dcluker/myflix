@@ -1,0 +1,8 @@
+/* Self-hosted so the UI renders with no internet. */
+@font-face {
+  font-family: 'Bebas Neue';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/static/fonts/bebas-neue-latin.woff2) format('woff2');
+}

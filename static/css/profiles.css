@@ -1,0 +1,215 @@
+/* Profile picker + link form. Nav is wordmark-only on this route (#nav.nav-minimal). */
+
+.pf {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: calc(var(--nav-h) + 1rem) var(--gutter) 4rem;
+  text-align: center;
+}
+.pf.is-link { background: radial-gradient(ellipse at 50% 30%, var(--bg-elev) 0%, var(--bg) 70%); }
+
+.pf-list { width: 100%; display: flex; flex-direction: column; align-items: center; }
+.pf-title {
+  margin-bottom: .8em;
+  font-size: clamp(1.9rem, 3.5vw, 4rem);
+  font-weight: 500;
+  line-height: 1.1;
+  color: #fff;
+}
+
+.pf-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: clamp(.9rem, 2vw, 2.2rem);
+  width: 100%;
+  max-width: 80rem;
+}
+.pf-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: min(10vw, 10rem);
+  min-width: 5.5rem;
+}
+.pf-item.is-confirm { min-width: 7rem; }
+
+.pf-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  color: #808080;
+  cursor: pointer;
+  transition: color .2s;
+}
+.pf-av {
+  position: relative;
+  display: block;
+  border-radius: var(--radius);
+  transition: box-shadow .15s, transform .3s var(--ease);
+}
+.pf-av { border-radius: .7rem; }
+.pf-av .avatar, .pf-av .pf-av-ov, .pf-add-av { border-radius: inherit; }
+.pf-av .avatar.lg { display: flex; }
+.pf-av.is-dim .avatar { opacity: .45; }
+.pf-tile:hover, .pf-tile:focus-visible { color: #fff; }
+.pf-tile:hover .pf-av, .pf-tile:focus-visible .pf-av { box-shadow: 0 0 0 2px rgba(255, 255, 255, .6), 0 0 28px rgba(var(--red-rgb), .45); }
+.pf-tile:focus-visible { outline: none; }
+html.tv .pf-tile:focus { outline: none; color: #fff; }
+html.tv .pf-tile:focus .pf-av { border-radius: .7rem; box-shadow: 0 0 0 2px rgba(255, 255, 255, .6), 0 0 32px 4px rgba(var(--red-rgb), .5), 0 14px 30px rgba(0, 0, 0, .6); transform: scale(1.1); }
+
+.pf-name {
+  display: block;
+  margin-top: .8rem;
+  max-width: 100%;
+  font-size: clamp(.9rem, 1.2vw, 1.25rem);
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.pf-flag { display: block; margin-top: .3rem; font-size: .75rem; color: #e87c03; }
+
+.pf-av-ov {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius);
+  background: rgba(0, 0, 0, .55);
+  color: #fff;
+}
+.pf-av-ov svg { width: 2.5rem; height: 2.5rem; }
+
+.pf-add-av { background: var(--bg-raised); color: #808080; transition: background-color .2s, color .2s; }
+.pf-add-av svg { width: 3.4rem; height: 3.4rem; }
+.pf-add:hover .pf-add-av, .pf-add:focus-visible .pf-add-av { background: #d2d2d2; color: var(--bg); }
+html.tv .pf-add:focus .pf-add-av { background: #d2d2d2; color: var(--bg); }
+
+/* inline remove confirmation */
+.pf-confirm-q { white-space: normal; color: #fff; }
+.pf-confirm { display: flex; flex-direction: column; gap: .5rem; width: 100%; margin-top: .75rem; }
+.pf-hint { display: block; margin-top: .6rem; font-size: .7rem; line-height: 1.3; color: #8c8c8c; }
+.pf-btn {
+  width: 100%;
+  padding: .5em .9em;
+  border: 1px solid #808080;
+  border-radius: var(--radius);
+  color: #e5e5e5;
+  font-size: .9rem;
+  font-weight: 700;
+  transition: background-color .2s, border-color .2s, color .2s;
+}
+.pf-btn:hover:not(:disabled) { border-color: #fff; color: #fff; }
+.pf-btn.danger { background: var(--red); border-color: var(--red); color: #fff; }
+.pf-btn.danger:hover:not(:disabled) { background: var(--red-hover); border-color: var(--red-hover); }
+.pf-btn:disabled { opacity: .6; cursor: default; }
+
+.pf-manage {
+  margin-top: clamp(2rem, 5vw, 4.5rem);
+  padding: .6em 1.6em;
+  border: 1px solid #808080;
+  color: #808080;
+  font-size: clamp(.8rem, 1.2vw, 1.2rem);
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  transition: color .2s, border-color .2s, background-color .2s;
+}
+.pf-manage:hover, .pf-manage:focus-visible { color: #fff; border-color: #fff; }
+.pf-manage.is-done { background: #fff; border-color: #fff; color: var(--bg); }
+.pf-manage.is-done:hover, .pf-manage.is-done:focus-visible { background: var(--red); border-color: var(--red); color: #fff; }
+
+/* ---- link form: Netflix sign-in card ------------------------------------------------------ */
+.pf-card {
+  width: min(450px, 100%);
+  padding: 3rem clamp(1.4rem, 5vw, 4rem) 3rem;
+  border-radius: var(--radius);
+  background: rgba(0, 0, 0, .75);
+  text-align: left;
+}
+.pf-card h1 { margin-bottom: .6rem; font-size: 2rem; font-weight: 700; line-height: 1.15; }
+.pf-sub { margin-bottom: 1.5rem; color: var(--muted); font-size: .95rem; line-height: 1.45; }
+.pf-input {
+  display: block;
+  width: 100%;
+  height: 3.1rem;
+  margin-bottom: 1rem;
+  padding: 0 1rem;
+  border: 0;
+  border-radius: var(--radius);
+  background: #333;
+  color: #fff;
+  font-size: 1rem;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.pf-input::placeholder { color: #8c8c8c; }
+.pf-input:focus { background: #454545; }
+.pf-input:disabled { opacity: .6; }
+.pf-err {
+  margin: 0 0 1rem;
+  padding: .75rem 1rem;
+  border-radius: var(--radius);
+  background: #e87c03;
+  color: #fff;
+  font-size: .9rem;
+  line-height: 1.35;
+}
+.pf-submit {
+  width: 100%;
+  height: 3.1rem;
+  margin-top: .5rem;
+  border-radius: var(--radius);
+  background: var(--red);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  transition: background-color .2s, transform .2s var(--ease);
+}
+.pf-submit:hover:not(:disabled) { background: var(--red-hover); }
+.pf-submit:active:not(:disabled) { transform: scale(.98); }
+.pf-submit:disabled { opacity: .65; cursor: default; }
+.pf-note { margin-top: 1.25rem; color: #8c8c8c; font-size: .8125rem; line-height: 1.45; }
+.pf-cancel { display: block; margin-top: 1.25rem; color: #b3b3b3; font-size: .95rem; }
+.pf-cancel:hover, .pf-cancel:focus-visible { color: #fff; text-decoration: underline; }
+
+@media (max-width: 739px) {
+  .pf { padding-top: calc(var(--nav-h) + .5rem); }
+  .pf-card { padding: 2rem 1.4rem; background: transparent; }
+  .pf-item { width: 7.5rem; }
+  .pf .avatar.lg { width: 7.5rem; height: 7.5rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.tv .pf-tile:focus .pf-av { transform: none; }
+}
+
+/* ---- sign in from a phone (TV): QR code + short code under the form ---------------------------- */
+.pf-phone { display: flex; align-items: center; gap: 1rem; margin-top: 1.1rem; padding-top: 1rem; border-top: 1px solid rgba(255, 255, 255, .15); text-align: left; }
+.pf-qr { flex: none; width: 6.2rem; height: 6.2rem; padding: .35rem; border-radius: .5rem; background: #fff; }
+.pf-qr svg { display: block; width: 100%; height: 100%; }
+.pf-qr:empty { background: rgba(255, 255, 255, .08); }
+.pf-phone-text { display: flex; flex-direction: column; gap: .3rem; font-size: .9rem; color: #cfcfcf; }
+.pf-phone-text strong { color: #fff; font-size: 1rem; }
+.pf-code { color: #fff; letter-spacing: .18em; font-size: 1.1rem; }
+
+/* TV: form on the left, QR on the right, so both fit on one screen */
+html.tv .pf-card { display: grid; grid-template-columns: minmax(0, 1fr) 11rem; column-gap: 1.6rem; align-items: start; width: min(36rem, 92vw); padding: 1.4rem 1.8rem; }
+html.tv .pf-card > h1, html.tv .pf-card > .pf-sub, html.tv .pf-card > .pf-form, html.tv .pf-card > .pf-note, html.tv .pf-card > .pf-cancel { grid-column: 1; }
+html.tv .pf-card > h1 { font-size: 1.5rem; margin-bottom: .3rem; }
+html.tv .pf-card > .pf-sub { font-size: .85rem; margin-bottom: .6rem; }
+html.tv .pf-card > .pf-note { font-size: .72rem; }
+html.tv .pf-phone { grid-column: 2; grid-row: 1 / span 5; flex-direction: column; margin: 0; padding: 0 0 0 1.4rem; border-top: 0; border-left: 1px solid rgba(255, 255, 255, .15); text-align: center; align-items: center; }
+html.tv .pf-qr { width: 8.2rem; height: 8.2rem; }
+html.tv .pf-phone-text { font-size: .78rem; align-items: center; }
+html.tv .pf-phone-text strong { font-size: .9rem; }
+html.tv .pf-code { font-size: 1.15rem; }
