@@ -3026,7 +3026,9 @@ class Handler(BaseHTTPRequestHandler):
     def _local_auth_route(self, path, method):
         """MYFLIX_AUTH=password: POST /login (form field "password") sets the session cookie; POST /logout clears it."""
         secure = "; Secure" if (self.headers.get("X-Forwarded-Proto") or "").lower() == "https" else ""
-        nostore = {"Cache-Control": "no-store"}
+        # same-origin (not the default no-referrer): with no-referrer a browser sends "Origin: null" on the form POST,
+        # which the same-origin check below would refuse.
+        nostore = {"Cache-Control": "no-store", "Referrer-Policy": "same-origin"}
         if method == "GET":
             return self._send(200, local_auth.login_page(), "text/html; charset=utf-8", nostore)
         try:
@@ -3060,7 +3062,8 @@ class Handler(BaseHTTPRequestHandler):
         if path.startswith("/api/") or path.startswith("/img/"):
             self._json(401, {"error": "unauthorized"})
         elif LOCAL_AUTH:
-            self._send(401, local_auth.login_page(), "text/html; charset=utf-8", {"Cache-Control": "no-store"})
+            self._send(401, local_auth.login_page(), "text/html; charset=utf-8",
+                       {"Cache-Control": "no-store", "Referrer-Policy": "same-origin"})   # see _local_auth_route
         else:
             self._send(401, DENIED_HTML, "text/html; charset=utf-8", {"Cache-Control": "no-store"})
 

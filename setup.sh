@@ -32,18 +32,21 @@ if [ -z "$pw" ]; then
   pw="$( (openssl rand -base64 18 2>/dev/null || head -c 18 /dev/urandom | base64) | tr -d '/+=' | head -c 16)"
   say "Generated password: $pw   (saved in .env)"
 fi
-while [ "${#pw}" -lt 8 ]; do
-  pw="$(ask 'Password must be at least 8 characters: ')"
+# .env is read by both the shell and Docker; a single-quoted value is taken literally by both, so only ' is off limits.
+while [ "${#pw}" -lt 8 ] || [ "${pw#*\'}" != "$pw" ]; do
+  pw="$(ask "Password must be at least 8 characters and cannot contain ' : ")"
 done
 
 umask 077
 cat > .env <<ENV
 # Written by setup.sh. Keep this file private (it holds the web password).
 MYFLIX_AUTH=password
-MYFLIX_PASSWORD=$pw
-JELLYFIN_URL=$url
+MYFLIX_PASSWORD='$pw'
+JELLYFIN_URL='$url'
 JELLYFIN_SERVER_ID=$id
 MYFLIX_PORT=8108
+# Listen on every network interface so phones and TVs on your home network can open it (127.0.0.1 = this computer only).
+MYFLIX_HOST=0.0.0.0
 ENV
 chmod 600 .env
 say ""

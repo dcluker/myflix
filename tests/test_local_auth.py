@@ -192,6 +192,18 @@ class HttpFlowTest(unittest.TestCase):
         r, _ = self.req("POST", "/login", "password=correct+horse", {"Origin": "https://evil.example"})
         self.assertEqual(r.status, 403)
 
+    def test_login_page_lets_the_browser_send_a_real_origin(self):
+        # Under "no-referrer" browsers send "Origin: null" on the form POST and the login is refused.
+        for path in ("/", "/login"):
+            r, _ = self.req("GET", path)
+            self.assertEqual(r.getheader("Referrer-Policy"), "same-origin", path)
+        r, body = self.req("POST", "/login", "password=wrong-one")
+        self.assertEqual(r.getheader("Referrer-Policy"), "same-origin")
+
+    def test_null_origin_login_post_is_refused(self):
+        r, _ = self.req("POST", "/login", "password=correct+horse", {"Origin": "null"})
+        self.assertEqual(r.status, 403)
+
     def login(self):
         r, _ = self.req("POST", "/login", "password=correct+horse")
         return r.getheader("Set-Cookie").split(";")[0]

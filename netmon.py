@@ -3,6 +3,7 @@ outage log. Runs inside MyFlix on the T14 so it keeps working (and keeps recordi
 import collections
 import json
 import os
+import shutil
 import socket
 import subprocess
 import threading
@@ -22,8 +23,25 @@ DNS_NAME = "cloudflare.com"
 LABELS = {"ok": "Online", "cloudflare": "Cloudflare issue", "wan": "Internet down", "lan": "Router unreachable"}
 
 
+def _tcp_reach(host, timeout=2, ports=(53, 80, 443)):
+    """Stand-in for ping where there is no ping program (slim Docker images): ms until a TCP port answers.
+    A refused connection still proves the host is there."""
+    for port in ports:
+        t0 = time.time()
+        try:
+            socket.create_connection((host, port), timeout=timeout).close()
+        except ConnectionRefusedError:
+            pass
+        except OSError:
+            continue
+        return round((time.time() - t0) * 1000, 1)
+    return None
+
+
 def _ping(host, timeout=2):
     """Round-trip ms, or None."""
+    if not shutil.which("ping"):
+        return _tcp_reach(host, timeout)
     t0 = time.time()
     try:
         p = subprocess.run(["ping", "-c", "1", "-W", str(timeout), host], capture_output=True, text=True, timeout=timeout + 2)

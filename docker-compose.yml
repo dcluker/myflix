@@ -6,6 +6,8 @@ services:
     env_file: .env
     environment:
       MYFLIX_AUTH: ${MYFLIX_AUTH:-password}
+      MYFLIX_PORT: "8108"          # inside the container; MYFLIX_PORT in .env only picks the port on this computer
+      MYFLIX_HOST: 0.0.0.0
     ports:
       - "${MYFLIX_BIND:-0.0.0.0}:${MYFLIX_PORT:-8108}:8108"
     volumes:

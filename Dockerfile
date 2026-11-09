@@ -3,7 +3,7 @@ FROM python:3.13-slim
 ENV PYTHONUNBUFFERED=1 MYFLIX_HOST=0.0.0.0
 RUN useradd --system --uid 10001 --create-home myflix
 WORKDIR /app
-COPY server.py local_auth.py sso_guard.py ./
+COPY server.py local_auth.py netmon.py sso_guard.py ./
 COPY static ./static
 RUN mkdir -p /app/data && chown myflix:myflix /app/data
 USER myflix

@@ -21,6 +21,10 @@ Open `http://<this computer>:8108`, sign in with your password, then link your J
 That is all you need for the web UI on phones, tablets, laptops and any TV browser.
 
 - **No Docker?** `./setup.sh`, then `set -a; . ./.env; set +a; python3 server.py` (Python 3.9+, nothing to install; tested on 3.13 and 3.14).
+- **Pressing Play in a browser** opens the title in Jellyfin's own web player, so each browser signs in to Jellyfin once as well.
+  MyFlix is the browsing, search and request layer; Jellyfin still does the playing. If people watch from outside your home, set
+  `JELLYFIN_PUBLIC` in `.env` to the address Jellyfin has out there (it defaults to `JELLYFIN_URL`, which only works at home).
+- **Different port?** Change `MYFLIX_PORT` in `.env` (with Docker that is the port on this computer; the container keeps its own).
 - **From outside your home:** put it behind HTTPS (a reverse proxy, Tailscale, or a Cloudflare Tunnel). The password page is
   fine on a home network; do not expose plain HTTP to the internet.
 - **Forgot the password?** Edit `MYFLIX_PASSWORD` in `.env` and `docker compose up -d`. Changing it signs every browser out.
@@ -32,6 +36,27 @@ That is all you need for the web UI on phones, tablets, laptops and any TV brows
 - **Live TV (free news, movies, kids, sports channels with a guide)?** See `scripts/livetv/README.md`. In a browser, channels play in a
   built-in player (hls.js, vendored; Safari plays natively). If a channel's host blocks browser playback, MyFlix relays it itself (it only
   fetches URLs it signed, never private addresses), then falls back to Jellyfin's transcode.
+
+## Requests: Jellyseerr, Sonarr, Radarr (optional)
+
+MyFlix does not talk to Sonarr or Radarr itself. It talks to Jellyseerr, which you
+connect to your *arr apps the usual way. With it set up, search also shows titles you do not have, with a Request button and
+a status (requested, downloading, available). Add to `.env`, then restart (`docker compose up -d`):
+
+```sh
+MYFLIX_SEERR_URL=http://192.168.1.10:5055     # Jellyseerr, as reachable from MyFlix (with Docker: not localhost)
+MYFLIX_SEERR_KEY=...                          # Jellyseerr > Settings > General > API Key
+MYFLIX_QB_URL=http://192.168.1.10:8080        # optional: qBittorrent, to tell "downloading" from "still searching"
+```
+
+- **Each person needs a Jellyseerr user.** In Jellyseerr, open Users and choose "Import Jellyfin Users". A request is made as
+  the Jellyseerr user that matches the MyFlix profile's Jellyfin account, so that user's own limits and approval rules apply.
+  A profile with no match is told "Your profile isn't set up for requests yet".
+- **qBittorrent** is asked without a login. In qBittorrent, Options > Web UI, turn on "Bypass authentication for clients in
+  whitelisted IP subnets" and add the address MyFlix runs on. Leave `MYFLIX_QB_URL` out if you would rather not; requests
+  still work, the status just says "searching" until the title lands in Jellyfin.
+- On a Mac without Docker the key can live in the Keychain instead of `.env`
+  (`security add-generic-password -s myflix-jellyseerr-api -a myflix -w`, then paste the key).
 
 ## What is in here
 
@@ -69,6 +94,9 @@ per-device Cloudflare Access service token, stored with `EncryptedSharedPreferen
 HTTPS hosts under `MYFLIX_HOST_SUFFIX`, never to the LAN address.
 
 ### Pairing service (not included)
+
+The TV and iOS apps only work with Cloudflare Access plus this pairing service; they do not support password mode. With the
+quick start above, use the web UI (it works in a TV's browser).
 
 The app expects a small public service at `MYFLIX_TV_BASE` that you run yourself:
 
