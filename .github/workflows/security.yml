@@ -1,0 +1,36 @@
+name: security
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "23 9 * * 1"   # Mondays 09:23 UTC
+  workflow_dispatch:
+permissions:
+  contents: read
+  pull-requests: read   # gitleaks lists PR commits
+jobs:
+  secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with: { fetch-depth: 0 }   # full history, so a secret in any past commit is caught
+      - uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e  # v3.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_ENABLE_COMMENTS: "false"
+  semgrep:
+    runs-on: ubuntu-latest
+    container: semgrep/semgrep
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+      # Excluded rules were triaged on the first run: config-supplied URLs, sha1 used only for ids/ETags, a Django-only rule,
+      # a data: URI icon, the launcher activity, and stdlib XML parsing of the configured guide feed. Remove one to re-check it.
+      - run: >
+          semgrep scan --config p/default --error --metrics=off 
+          --exclude-rule python.lang.security.audit.dynamic-urllib-use-detected.dynamic-urllib-use-detected
+          --exclude-rule python.lang.security.insecure-hash-algorithms.insecure-hash-algorithm-sha1
+          --exclude-rule python.django.security.audit.unvalidated-password.unvalidated-password
+          --exclude-rule html.security.audit.missing-integrity.missing-integrity
+          --exclude-rule java.android.security.exported_activity.exported_activity
+          --exclude-rule python.lang.security.use-defused-xml-parse.use-defused-xml-parse
