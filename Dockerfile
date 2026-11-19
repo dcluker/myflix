@@ -1,5 +1,5 @@
 # MyFlix: standard-library Python only, so the image is tiny and has nothing to keep patched.
-FROM python:3.13-slim
+FROM python:3.15-slim
 ENV PYTHONUNBUFFERED=1 MYFLIX_HOST=0.0.0.0
 RUN useradd --system --uid 10001 --create-home myflix
 WORKDIR /app
