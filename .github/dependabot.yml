@@ -4,11 +4,14 @@ updates:
     directory: /android
     schedule: { interval: weekly }
     cooldown: { default-days: 7 }
+    open-pull-requests-limit: 0   # public snapshot: bumps land in the private source repo; security PRs still open
   - package-ecosystem: docker
     directory: /
     schedule: { interval: weekly }
     cooldown: { default-days: 7 }
+    open-pull-requests-limit: 0   # public snapshot: bumps land in the private source repo; security PRs still open
   - package-ecosystem: github-actions
     directory: /
     schedule: { interval: weekly }
     cooldown: { default-days: 7 }
+    open-pull-requests-limit: 0   # public snapshot: bumps land in the private source repo; security PRs still open
